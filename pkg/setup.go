@@ -142,7 +142,7 @@ func (m *LDAPManager) setupReadOnlyUser() error {
 	// bind for the config CN to apply ACL rules
 	configDN := fmt.Sprintf(
 		"cn=%s,cn=config",
-		m.Config.AdminUsername,
+		m.Config.ConfigUsername,
 	)
 	configPassword := "config"
 	if err := conn.Bind(configDN, configPassword); err != nil {
@@ -296,7 +296,15 @@ func (m *LDAPManager) setupAdmin() error {
 
 // SetupLDAP sets up the LDAP server
 func (m *LDAPManager) SetupLDAP() error {
-	if err := m.setupGroupOU(); err != nil {
+
+	// JPK: It looks like this code is for setting up a new LDAP server.
+	//      TODO: Add a command line option to not do this.  I think it's
+	//      related to the --generate command line option.  That option
+	//      appears to generate some kind of certificate, but maybe
+	//      we want to generate that cert without actually setting up
+	//      an LDAP server.
+
+	/*if err := m.setupGroupOU(); err != nil {
 		exists := ldap.IsErrorWithCode(err, ldap.LDAPResultEntryAlreadyExists)
 		if !exists {
 			return fmt.Errorf(
@@ -354,6 +362,9 @@ func (m *LDAPManager) SetupLDAP() error {
 	// 		return err
 	// 	}
 	// }
+
+	*/
+
 	return nil
 }
 
@@ -395,8 +406,16 @@ func (m *LDAPManager) Connect() error {
 
 	reset := func(conn ldap.Client) error {
 		// re-bind as the admin user
+		var adminDN string
+
+		if m.AdminCustomDN != "" {
+			adminDN = m.AdminCustomDN
+		} else {
+			adminDN = m.AdminUserDN()
+		}
+
 		return conn.Bind(
-			m.AdminUserDN(),
+			adminDN,
 			m.Config.AdminPassword,
 		)
 	}
@@ -420,6 +439,8 @@ func (m *LDAPManager) CheckServerCapabilities() error {
 	// olcModuleLoad: {2}refint
 	// structuralObjectClass: olcModuleList
 
+	var configDN string
+
 	conn, err := m.Pool.Get()
 	if err != nil {
 		return err
@@ -427,10 +448,15 @@ func (m *LDAPManager) CheckServerCapabilities() error {
 	defer conn.Close()
 
 	// bind for the config CN
-	configDN := fmt.Sprintf(
-		"cn=%s,cn=config",
-		m.Config.AdminUsername,
-	)
+	if m.Config.AdminCustomDN != "" {
+		configDN = m.Config.AdminCustomDN
+	} else {
+		configDN = fmt.Sprintf(
+			"cn=%s,cn=config",
+			m.Config.ConfigUsername,
+		)
+	}
+
 	if err := conn.Bind(configDN, m.Config.ConfigPassword); err != nil {
 		return fmt.Errorf(
 			"unable to bind as config user %q: %v",
@@ -438,7 +464,11 @@ func (m *LDAPManager) CheckServerCapabilities() error {
 		)
 	}
 
-	result, err := conn.Search(ldap.NewSearchRequest(
+	// JPK: Does Samba4 AD DC support cn=module{0},cn=config, (objectClass=olcModuleList),
+	//      and olcModuleLoad? It doesn't.  Do we care?  Commenting out below block
+	//      of code to test.
+
+	/*result, err := conn.Search(ldap.NewSearchRequest(
 		"cn=module{0},cn=config",
 		ldap.ScopeWholeSubtree, ldap.NeverDerefAliases, 0, 0, false,
 		"(objectClass=olcModuleList)",
@@ -465,7 +495,8 @@ func (m *LDAPManager) CheckServerCapabilities() error {
 		return fmt.Errorf(
 			"memberof is not (yet) available for LDAP server",
 		)
-	}
+	} */
+
 	return nil
 }
 

@@ -33,6 +33,13 @@ var (
 		EnvVars: []string{"LDAP_ADMIN_USERNAME"},
 		Usage:   "LDAP admin username",
 	}
+	// LdapAdminCustomDN configures the LDAP admin Custom DN if needed (optional)
+	LdapAdminCustomDN = cli.StringFlag{
+		Name:    "ldap-admin-custom-dn",
+		Value:   "admin",
+		EnvVars: []string{"LDAP_ADMIN_CUSTOM_DN"},
+		Usage:   "LDAP admin custom dn",
+	}
 	// LdapAdminPassword configures the LDAP admin password
 	LdapAdminPassword = cli.StringFlag{
 		Name:    "ldap-admin-password",
@@ -109,9 +116,11 @@ var (
 		&LdapPort,
 		&LdapProtocol,
 		&LdapAdminUsername,
+		&LdapAdminCustomDN,
 		&LdapAdminPassword,
 		&LdapReadOnlyUsername,
 		&LdapReadOnlyPassword,
+		&LdapConfigUsername,
 		&LdapConfigPassword,
 		&LdapOrganization,
 		&LdapDomain,

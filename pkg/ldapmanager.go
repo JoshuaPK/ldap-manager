@@ -23,6 +23,7 @@ type LDAPManager struct {
 	DefaultUserShell  string
 
 	DefaultAdminUsername string
+	DefaultAdminCustomDN string
 	DefaultAdminPassword string
 	ForceCreateAdmin     bool
 

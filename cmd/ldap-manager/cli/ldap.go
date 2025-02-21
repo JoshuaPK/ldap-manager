@@ -92,6 +92,13 @@ var (
 		EnvVars: []string{"DEFAULT_ADMIN_USERNAME"},
 		Usage:   "default admin username",
 	}
+	// DefaultAdminCustomDN configures the default LDAP admin custom DN
+	DefaultAdminCustomDN = cli.StringFlag{
+		Name:    "default-admin-custom-dn",
+		Value:   "admin",
+		EnvVars: []string{"DEFAULT_ADMIN_CUSTOM_DN"},
+		Usage:   "default admin custom DN",
+	}
 	// DefaultAdminPassword configures the default LDAP admin password
 	DefaultAdminPassword = cli.StringFlag{
 		Name:    "default-admin-password",

@@ -14,10 +14,12 @@ type Config struct {
 	Domain              string
 	BaseDN              string
 	AdminUsername       string
+	AdminCustomDN       string
 	AdminPassword       string
 	ReadOnlyUser        bool
 	ReadOnlyUsername    string
 	ReadOnlyPassword    string
+	ConfigUsername      string
 	ConfigPassword      string
 	TLS                 bool
 	UseRFC2307BISSchema bool
@@ -37,6 +39,7 @@ func NewConfig() Config {
 		ReadOnlyUser:        true,
 		ReadOnlyUsername:    "readonly",
 		ReadOnlyPassword:    "readonly",
+		ConfigUsername:      NewConfig().AdminUsername, // TODO: command line option for this
 		ConfigPassword:      "config",
 		TLS:                 false,
 		UseRFC2307BISSchema: true,
