@@ -440,6 +440,7 @@ func (m *LDAPManager) CheckServerCapabilities() error {
 	// structuralObjectClass: olcModuleList
 
 	var configDN string
+	var bindPassword string
 
 	conn, err := m.Pool.Get()
 	if err != nil {
@@ -450,14 +451,16 @@ func (m *LDAPManager) CheckServerCapabilities() error {
 	// bind for the config CN
 	if m.Config.AdminCustomDN != "" {
 		configDN = m.Config.AdminCustomDN
+		bindPassword = m.Config.AdminPassword
 	} else {
 		configDN = fmt.Sprintf(
 			"cn=%s,cn=config",
 			m.Config.ConfigUsername,
 		)
+		bindPassword = m.Config.ConfigPassword
 	}
 
-	if err := conn.Bind(configDN, m.Config.ConfigPassword); err != nil {
+	if err := conn.Bind(configDN, bindPassword); err != nil {
 		return fmt.Errorf(
 			"unable to bind as config user %q: %v",
 			configDN, err,

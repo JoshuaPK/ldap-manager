@@ -73,6 +73,36 @@ TODO
 
 ### Development
 
+#### The Traditional Way:
+
+##### Building on Command Line:
+
+Be sure to configure the environment variables!
+
+```go build -a -ldflags="-w -s -X main.Version=$version -X main.Rev=$rev -X main.BuildTime=$buildTime" -o app "github.com/romnn/ldap-manager/cmd/ldap-manager"```
+
+Go into the web directory and do this:
+
+yarn install --dev
+yarn build
+
+##### Running the app from the command line:
+
+```./app --ldap-host domain_controller.domain.com --ldap-admin-custom-dn "CN=Administrator,CN=Users,DC=domain,DC=com" --ldap-admin-password SomePassword --ldap-config-password SomePassword --ldap-organization DOMAIN.COM --ldap-domain domain.com --ldap-base-dn "dc=domain,dc=com" --ldap-tls serve --generate --grpc-port 9095 --http-port 8090 --log-level debug  --static-root web/```
+
+##### TODO
+
+Why does the above just present a blank page in the web browser when you run it?  It just presents index.html to the web browser, which ultimately has this content:
+
+```
+  <body>
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+```
+
+The src/main.ts script has references to ./App.vue, which apparently is not copied into place properly.
+
 #### Tools
 
 Before you get started, make sure you have installed the following tools:
